@@ -1,444 +1,130 @@
-import streamlit as st
-from supabase import create_client, Client
-from logic import analyse_number, HOME_TZ, BLOCKED_COUNTRIES
-
-# ---------- SUPABASE CLIENT ----------
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_ANON_KEY = st.secrets["SUPABASE_ANON_KEY"]
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-# ---------- PAGE SETUP ----------
-st.set_page_config(
-    page_title="Call Qualification Checker · Shulver DataWorks",
-    page_icon="📞",
-    layout="centered",
-)
-
-# ---------- GLOBAL STYLING (CSS) ----------
-st.markdown(
-    """
+st.markdown("""
 <style>
-/* === GLOBAL BACKGROUND & LAYOUT =================================== */
+
+/* === GLOBAL BACKGROUND === */
 .stApp {
-    background: radial-gradient(circle at top left, #020617 0%, #020617 40%, #000000 90%);
-    color: #e5e7eb;
+    background-color: #1c1c1c;   /* Dark grey */
+    color: #ffffff !important;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-/* Bring content higher & keep it centered */
+/* Move content DOWN slightly */
 .block-container {
-    padding-top: 0.5rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 2rem !important;
     max-width: 900px !important;
-    margin: 0 auto !important;
 }
 
-/* Make all labels & small text readable on dark background */
-label, .stRadio label, .stCheckbox label {
-    color: #e5e7eb !important;
-}
-
-/* Markdown paragraphs */
-.stMarkdown p {
-    color: #e5e7eb !important;
-}
-
-/* === TOP NAVBAR ==================================================== */
-.sdw-nav {
+/* === HEADER BAR === */
+.top-header {
     width: 100%;
-    background: linear-gradient(90deg, #020617 0%, #020b10 60%, #020617 100%);
-    border-radius: 16px;
-    padding: 0.75rem 1.4rem;
+    background-color: #004225;  /* British Racing Green */
+    padding: 1.1rem 1.4rem;
+    border-radius: 12px;
+    margin-bottom: 1.8rem;   /* DROP HEADER LOWER */
+    color: white;
+    font-weight: 700;
+    font-size: 1.35rem;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    border: 1px solid rgba(148, 163, 184, 0.35);
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
-    margin-bottom: 1.0rem;
-}
-
-.sdw-nav-left {
-    display: flex;
     align-items: center;
-    gap: 0.55rem;
 }
 
-.sdw-logo-pill {
-    width: 26px;
-    height: 26px;
-    border-radius: 999px;
-    background: radial-gradient(circle, #22c55e 0%, #16a34a 40%, #052e16 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    color: #020617;
-    font-size: 0.8rem;
+.header-brand {
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.9;
 }
 
-.sdw-brand {
-    font-weight: 800;
-    font-size: 1.0rem;
-    letter-spacing: 0.06em;
-    color: #22c55e;
-}
-
-.sdw-nav-right {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: #9ca3af;
-    letter-spacing: 0.16em;
-}
-
-/* === HERO TEXT ===================================================== */
+/* === TITLES === */
 .hero-title {
-    font-size: 1.9rem;
+    font-size: 1.7rem;
     font-weight: 800;
-    margin-bottom: 0.2rem;
-    background: linear-gradient(120deg, #f9fafb, #22c55e);
-    -webkit-background-clip: text;
-    color: transparent;
+    margin-bottom: 0.3rem;
+    color: white;
 }
 
 .hero-subtitle {
+    color: #cccccc;
     font-size: 0.95rem;
-    color: #9ca3af;
-    margin-bottom: 1.0rem;
+    margin-bottom: 1rem;
 }
 
-/* === CARDS ========================================================= */
-.main-card,
-.login-card {
-    background: #020617;
-    border-radius: 16px;
-    padding: 1.2rem 1.4rem;
-    border: 1px solid rgba(148, 163, 184, 0.4);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.9);
-    margin-bottom: 1.0rem;
+/* === CARDS === */
+.main-card, .login-card {
+    background-color: #2a2a2a;   /* slightly lighter dark grey */
+    padding: 1.4rem;
+    border-radius: 14px;
+    border: 1px solid #3a3a3a;
+    margin-bottom: 1.6rem;
 }
 
-.login-card {
-    max-width: 520px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.login-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 0.3rem;
-}
-
-.login-subtitle {
-    font-size: 0.9rem;
-    color: #9ca3af;
-    margin-bottom: 0.8rem;
-}
-
-/* === BUTTONS ======================================================= */
+/* === BUTTONS === */
 .stButton>button {
-    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
-    color: #020617 !important;
-    border: none !important;
-    padding: 0.7rem 1.6rem !important;
-    border-radius: 999px !important;
-    font-size: 1rem !important;
-    font-weight: 700 !important;
-    cursor: pointer;
-    box-shadow: 0 14px 30px rgba(34, 197, 94, 0.45);
+    background-color: #004225 !important;   /* British racing green */
+    color: white !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1.2rem !important;
+    font-weight: 600 !important;
+    border: none;
 }
 
 .stButton>button:hover {
-    background: linear-gradient(135deg, #22c55e, #4ade80) !important;
+    background-color: #006b3c !important;
 }
 
-/* === RESULT CARD =================================================== */
+/* === RESULT CARD === */
 .result-card {
-    margin-top: 0.9rem;
-    padding: 1.0rem 1.2rem;
-    border-radius: 14px;
-    background: #020617;
-    border: 1px solid rgba(34, 197, 94, 0.7);
-    box-shadow: 0 18px 55px rgba(22, 163, 74, 0.6);
+    background-color: #2a2a2a;
+    border: 1px solid #004225;
+    padding: 1.3rem;
+    border-radius: 12px;
 }
 
 .result-label {
-    font-size: 0.72rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #9ca3af;
-    margin-bottom: 0.15rem;
+    opacity: 0.7;
 }
 
-/* Bigger + bolder country text */
+/* Bigger + clearer result text */
 .result-main {
-    font-size: 1.35rem;
+    font-size: 1.45rem;
     font-weight: 800;
-    color: #f9fafb;
+    margin-bottom: 0.4rem;
+    color: white;
 }
 
-/* === STATUS PILLS ================================================== */
+/* Status pills */
 .pill {
     display: inline-block;
-    padding: 0.25rem 0.8rem;
-    border-radius: 999px;
-    font-size: 0.82rem;
+    padding: 0.25rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
     font-weight: 600;
 }
 
 .pill-ok {
-    background: linear-gradient(135deg, #16a34a, #22c55e);
-    color: #020617;
+    background-color: #004225;
+    color: white;
 }
 
 .pill-bad {
-    background-color: #7f1d1d;
-    color: #fecaca;
-    border: 1px solid #fca5a5;
+    background-color: #7a1a1a;
+    color: white;
 }
 
-/* === TIME GRID ===================================================== */
-.time-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 2rem;
-    row-gap: 0.6rem;
-    font-size: 0.9rem;
-    margin-top: 0.7rem;
+/* Fix radio + labels not showing */
+label, .stRadio label {
+    color: white !important;
 }
 
-.time-label {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    color: #9ca3af;
-}
-
-.time-value {
-    font-weight: 600;
-}
-
-/* === EXPANDER ====================================================== */
-div[role="button"][data-baseweb="accordion"] {
-    background-color: #020617 !important;
-    color: #e5e7eb !important;
-}
-
-/* === FOOTER ======================================================== */
+/* Footer */
 .footer {
-    margin-top: 2.0rem;
-    font-size: 0.78rem;
-    color: #6b7280;
     text-align: center;
+    color: #aaaaaa;
+    font-size: 0.8rem;
+    margin-top: 1.8rem;
 }
+
 </style>
-""",
-    unsafe_allow_html=True,
-)
-
-# ---------- TOP NAVBAR ----------
-st.markdown(
-    '''
-    <div class="sdw-nav">
-        <div class="sdw-nav-left">
-            <div class="sdw-logo-pill">SD</div>
-            <div class="sdw-brand">Shulver DataWorks</div>
-        </div>
-        <div class="sdw-nav-right">
-            CALL QUALIFICATION PLATFORM
-        </div>
-    </div>
-    ''',
-    unsafe_allow_html=True,
-)
-
-# ---------- AUTH / LOGIN ----------
-
-if "user" not in st.session_state:
-    st.session_state["user"] = None
-
-if st.session_state["user"] is None:
-    st.markdown('<div class="login-card">', unsafe_allow_html=True)
-    st.markdown('<div class="login-title">🔐 Account Login</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="login-subtitle">'
-        'Create an account or log in to access the Shulver DataWorks Call Qualification Checker.'
-        '</div>',
-        unsafe_allow_html=True,
-    )
-
-    mode = st.radio("Mode", ["Login", "Sign Up"], horizontal=True)
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-
-    if st.button("Continue"):
-        if not email or not password:
-            st.error("Please enter both email and password.")
-        else:
-            try:
-                if mode == "Sign Up":
-                    supabase.auth.sign_up({"email": email, "password": password})
-                    st.success(
-                        "Check your email to confirm your account, then come back and log in."
-                    )
-                else:
-                    res = supabase.auth.sign_in_with_password(
-                        {"email": email, "password": password}
-                    )
-                    if res.user is None:
-                        st.error("Login failed. Please check your details.")
-                    else:
-                        st.session_state["user"] = res.user
-                        st.rerun()
-            except Exception as e:
-                st.error(f"Auth error: {e}")
-
-    st.markdown("</div>", unsafe_allow_html=True)
-    st.stop()
-
-user = st.session_state["user"]
-
-# ---------- SUBSCRIPTION CHECK ----------
-try:
-    result = supabase.table("customers").select("*").eq("id", user.id).execute()
-    rows = result.data or []
-    if not rows:
-        supabase.table("customers").insert(
-            {"id": user.id, "email": user.email, "is_paid": False}
-        ).execute()
-        is_paid = False
-    else:
-        is_paid = rows[0].get("is_paid", False)
-except Exception as e:
-    st.error(f"Error checking subscription status: {e}")
-    st.stop()
-
-# ---------- PAYWALL ----------
-if not is_paid:
-    st.markdown('<div class="login-card">', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="login-title">💳 Subscription required</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        "<div class='login-subtitle'>"
-        "You’re almost there — activate your subscription to unlock the Call Qualification Checker."
-        "</div>",
-        unsafe_allow_html=True,
-    )
-
-    st.write("After subscribing, Shulver DataWorks will enable your access.")
-
-    # IMPORTANT: replace this with your real Stripe link
-    stripe_checkout_url = "https://YOUR_REAL_STRIPE_LINK_HERE"
-
-    st.markdown(
-        f"<a href='{stripe_checkout_url}' target='_blank'>**Subscribe now**</a>",
-        unsafe_allow_html=True,
-    )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-    st.stop()
-
-# ---------- MAIN TOOL UI (only after login + paid) ----------
-
-st.markdown(
-    """
-<div class="hero-title">Call Qualification Checker</div>
-<div class="hero-subtitle">
-Check if a number qualifies and instantly see its country and local time —
-built by Shulver DataWorks.
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-st.markdown('<div class="main-card">', unsafe_allow_html=True)
-
-number = st.text_input(
-    "Phone number (with + country code)",
-    placeholder="+447123456789",
-    help="Paste a full number including the + and country code.",
-)
-
-check_button = st.button("Check number")
-
-if check_button:
-    if not number.strip():
-        st.warning("Please enter a number first.")
-    else:
-        result = analyse_number(number)
-
-        if not result.get("valid"):
-            st.error(result.get("error", "Unknown error"))
-        else:
-            allowed = result["allowed"]
-            country = result["country"]
-            region = result["region"]
-
-            if allowed:
-                status_html = '<span class="pill pill-ok">QUALIFIES</span>'
-            else:
-                status_html = '<span class="pill pill-bad">DOES NOT QUALIFY</span>'
-
-            st.markdown('<div class="result-card">', unsafe_allow_html=True)
-
-            st.markdown(
-                f"<div class='result-label'>Number origin</div>"
-                f"<div class='result-main'>{country} ({region})</div>",
-                unsafe_allow_html=True,
-            )
-
-            st.markdown(
-                f"<div class='result-label' style='margin-top:0.4rem;'>Status</div>"
-                f"{status_html}",
-                unsafe_allow_html=True,
-            )
-
-            if result.get("has_timezone"):
-                diff = result["diff_hours"]
-                diff_str = f"{diff:+.1f} hours"
-
-                st.markdown(
-                    "<div class='result-label' style='margin-top:0.7rem;'>Time information</div>",
-                    unsafe_allow_html=True,
-                )
-
-                st.markdown(
-                    f"""
-                    <div class="time-grid">
-                      <div>
-                        <div class="time-label">Your timezone</div>
-                        <div class="time-value">{HOME_TZ.zone}</div>
-                        <div class="time-label" style="margin-top:0.15rem;">Your local time</div>
-                        <div class="time-value">{result['home_time']}</div>
-                      </div>
-                      <div>
-                        <div class="time-label">Their local time</div>
-                        <div class="time-value">{result['dest_time']}</div>
-                        <div class="time-label" style="margin-top:0.15rem;">Difference</div>
-                        <div class="time-value">{diff_str}</div>
-                      </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            else:
-                st.info(
-                    result.get(
-                        "error", "No timezone info available for this number."
-                    )
-                )
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("</div>", unsafe_allow_html=True)  # close main-card
-
-# ---------- BLOCKED COUNTRIES EXPANDER ----------
-with st.expander("View NOT-qualified country codes"):
-    st.write(sorted(BLOCKED_COUNTRIES))
-    st.caption("These countries (plus all of Africa) do NOT qualify.")
-
-# ---------- FOOTER ----------
-st.markdown(
-    "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
