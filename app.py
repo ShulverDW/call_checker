@@ -253,8 +253,8 @@ except Exception as e:
 
 # ---------- Paywall ----------
 if not is_paid:
-    if not is_paid:
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
+
 
     st.markdown(
         '<div class="login-title">💳 Subscription required</div>',
@@ -369,6 +369,7 @@ st.markdown(
     "<div class='footer'>© Shulver Data Works — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
