@@ -337,36 +337,39 @@ if check_button:
             allowed = result["allowed"]
             country = result["country"]
             region = result["region"]
+        if allowed:
+            status_html = '<span class="pill pill-ok">QUALIFIES</span>'
+        else:
+            status_html = '<span class="pill pill-bad">DOES NOT QUALIFY</span>'
 
-            if allowed:
-                status_html = '<span class="pill pill-ok">QUALIFIES</span>'
-            else:
-                status_html = '<span class="pill pill-bad">DOES NOT QUALIFY</span>'
-# --- Save to history in Supabase ---
-try:
-    supabase.table("call_history").insert(
-        {
-            "user_id": user.id,
-            "number": number,
-            "country": f"{country} ({region})",
-            "qualifies": allowed,
-        }
-    ).execute()
-except Exception as e:
-    st.error(f"Error saving history: {e}")
+        # --- Save to history in Supabase ---
+        try:
+            supabase.table("call_history").insert(
+                {
+                    "user_id": user.id,
+                    "number": number,
+                    "country": f"{country} ({region})",
+                    "qualifies": allowed,
+                }
+            ).execute()
+        except Exception as e:
+            st.error(f"Error saving history: {e}")
 
-    if check_button:
-    result = analyse_number(number)
-
-    if result["valid"]:
-        allowed = result["allowed"]
-        country = result["country"]
-        region = result["region"]
-
-        # correct indentation
+        # --- Show result card ---
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.markdown(f'<div class="result-main">{country} ({region})</div>', unsafe_allow_html=True)
-        ...
+
+        st.markdown(
+            f"<div class='result-label'>Number origin</div>"
+            f"<div class='result-main'>{country} ({region})</div>",
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            f"<div class='result-label' style='margin-top:0.4rem;'>Status</div>"
+            f"{status_html}",
+            unsafe_allow_html=True,
+        )
+
 
 
             st.markdown(
@@ -461,6 +464,7 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
