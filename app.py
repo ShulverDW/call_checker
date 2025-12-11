@@ -18,32 +18,42 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-/* === GLOBAL APP BACKGROUND ========================================= */
+/* === GLOBAL BACKGROUND & LAYOUT =================================== */
 .stApp {
-    background: radial-gradient(circle at top left, #06141f 0%, #020617 40%, #000000 90%);
+    background: radial-gradient(circle at top left, #020617 0%, #020617 40%, #000000 90%);
     color: #e5e7eb;
 }
 
-/* Constrain content & bring it higher on the page */
+/* Bring content higher & keep it centered */
 .block-container {
-    padding-top: 0.6rem !important;   /* was 1.5rem */
-    padding-bottom: 2.3rem !important;
-    max-width: 980px !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 2rem !important;
+    max-width: 900px !important;
     margin: 0 auto !important;
 }
 
-/* === TOP DARK NAVBAR =============================================== */
+/* Make all labels & small text readable on dark background */
+label, .stRadio label, .stCheckbox label {
+    color: #e5e7eb !important;
+}
+
+/* Markdown paragraphs */
+.stMarkdown p {
+    color: #e5e7eb !important;
+}
+
+/* === TOP NAVBAR ==================================================== */
 .sdw-nav {
     width: 100%;
     background: linear-gradient(90deg, #020617 0%, #020b10 60%, #020617 100%);
-    border-radius: 18px;
+    border-radius: 16px;
     padding: 0.75rem 1.4rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border: 1px solid rgba(148, 163, 184, 0.25);
-    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5);
-    margin-bottom: 1.2rem;   /* tighter gap below nav */
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
+    margin-bottom: 1.0rem;
 }
 
 .sdw-nav-left {
@@ -53,8 +63,8 @@ st.markdown(
 }
 
 .sdw-logo-pill {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 999px;
     background: radial-gradient(circle, #22c55e 0%, #16a34a 40%, #052e16 100%);
     display: flex;
@@ -62,28 +72,27 @@ st.markdown(
     justify-content: center;
     font-weight: 800;
     color: #020617;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .sdw-brand {
     font-weight: 800;
-    font-size: 1.02rem;
-    letter-spacing: 0.05em;
+    font-size: 1.0rem;
+    letter-spacing: 0.06em;
     color: #22c55e;
 }
 
 .sdw-nav-right {
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     color: #9ca3af;
     letter-spacing: 0.16em;
 }
 
-/* === HERO AREA ===================================================== */
+/* === HERO TEXT ===================================================== */
 .hero-title {
     font-size: 1.9rem;
     font-weight: 800;
-    letter-spacing: 0.01em;
     margin-bottom: 0.2rem;
     background: linear-gradient(120deg, #f9fafb, #22c55e);
     -webkit-background-clip: text;
@@ -96,43 +105,33 @@ st.markdown(
     margin-bottom: 1.0rem;
 }
 
-/* === MAIN CARD ===================================================== */
-.main-card {
-    background: radial-gradient(circle at top left, #1f2937 0%, #020617 60%);
-    border-radius: 18px;
-    padding: 1.1rem 1.4rem 1.4rem 1.4rem;
-    border: 1px solid rgba(148, 163, 184, 0.35);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-    margin-bottom: 1.1rem;
+/* === CARDS ========================================================= */
+.main-card,
+.login-card {
+    background: #020617;
+    border-radius: 16px;
+    padding: 1.2rem 1.4rem;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.9);
+    margin-bottom: 1.0rem;
 }
 
-/* === TEXT INPUTS =================================================== */
-
-/* Outer wrapper of text inputs */
-.stTextInput > div > div {
-    background-color: #020617 !important;
-    border-radius: 999px !important;
-    border: 1px solid rgba(148,163,184,0.7) !important;
+.login-card {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* Actual input element */
-.stTextInput > div > div > input {
-    color: #f9fafb !important;                  /* brighter text */
-    background-color: transparent !important;   /* use wrapper bg */
+.login-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
 }
 
-/* Placeholder text */
-.stTextInput input::placeholder {
-    color: #6b7280 !important;
-}
-
-/* === RADIO (Login / Sign Up) ====================================== */
-.stRadio > label {
-    color: #e5e7eb !important;   /* group label */
-}
-
-.stRadio div[role="radiogroup"] label {
-    color: #e5e7eb !important;   /* options "Login" / "Sign Up" */
+.login-subtitle {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    margin-bottom: 0.8rem;
 }
 
 /* === BUTTONS ======================================================= */
@@ -152,36 +151,13 @@ st.markdown(
     background: linear-gradient(135deg, #22c55e, #4ade80) !important;
 }
 
-/* === LOGIN & PAYWALL CARD ========================================== */
-.login-card {
-    max-width: 520px;
-    margin: 0.8rem auto;    /* was 1.6rem */
-    padding: 1.4rem 1.5rem 1.5rem 1.5rem;
-    background: radial-gradient(circle at top left, #111827 0%, #020617 70%);
-    border-radius: 18px;
-    border: 1px solid rgba(148, 163, 184, 0.35);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.8);
-}
-
-.login-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-}
-
-.login-subtitle {
-    font-size: 0.9rem;
-    color: #9ca3af;
-    margin-bottom: 0.9rem;
-}
-
 /* === RESULT CARD =================================================== */
 .result-card {
-    margin-top: 1.0rem;
-    padding: 1.0rem 1.2rem 1.1rem 1.2rem;
-    border-radius: 16px;
-    background: radial-gradient(circle at top left, #020617 0%, #0b1120 60%);
-    border: 1px solid rgba(34, 197, 94, 0.55);
+    margin-top: 0.9rem;
+    padding: 1.0rem 1.2rem;
+    border-radius: 14px;
+    background: #020617;
+    border: 1px solid rgba(34, 197, 94, 0.7);
     box-shadow: 0 18px 55px rgba(22, 163, 74, 0.6);
 }
 
@@ -190,14 +166,14 @@ st.markdown(
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #9ca3af;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.15rem;
 }
 
-/* Bigger main result text (country) */
+/* Bigger + bolder country text */
 .result-main {
-    font-size: 1.35rem;   /* was ~1.15rem */
+    font-size: 1.35rem;
     font-weight: 800;
-    color: #e5e7eb;
+    color: #f9fafb;
 }
 
 /* === STATUS PILLS ================================================== */
@@ -258,7 +234,7 @@ div[role="button"][data-baseweb="accordion"] {
     unsafe_allow_html=True,
 )
 
-# ---------- TOP NAV (Shulver DataWorks style) ----------
+# ---------- TOP NAVBAR ----------
 st.markdown(
     '''
     <div class="sdw-nav">
@@ -299,7 +275,7 @@ if st.session_state["user"] is None:
         else:
             try:
                 if mode == "Sign Up":
-                    res = supabase.auth.sign_up({"email": email, "password": password})
+                    supabase.auth.sign_up({"email": email, "password": password})
                     st.success(
                         "Check your email to confirm your account, then come back and log in."
                     )
@@ -351,7 +327,7 @@ if not is_paid:
 
     st.write("After subscribing, Shulver DataWorks will enable your access.")
 
-    # IMPORTANT: replace with your real Stripe link
+    # IMPORTANT: replace this with your real Stripe link
     stripe_checkout_url = "https://YOUR_REAL_STRIPE_LINK_HERE"
 
     st.markdown(
@@ -412,7 +388,7 @@ if check_button:
             )
 
             st.markdown(
-                f"<div class='result-label' style='margin-top:0.45rem;'>Status</div>"
+                f"<div class='result-label' style='margin-top:0.4rem;'>Status</div>"
                 f"{status_html}",
                 unsafe_allow_html=True,
             )
@@ -422,7 +398,7 @@ if check_button:
                 diff_str = f"{diff:+.1f} hours"
 
                 st.markdown(
-                    "<div class='result-label' style='margin-top:0.8rem;'>Time information</div>",
+                    "<div class='result-label' style='margin-top:0.7rem;'>Time information</div>",
                     unsafe_allow_html=True,
                 )
 
