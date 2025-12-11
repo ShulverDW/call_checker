@@ -342,6 +342,18 @@ if check_button:
                 status_html = '<span class="pill pill-ok">QUALIFIES</span>'
             else:
                 status_html = '<span class="pill pill-bad">DOES NOT QUALIFY</span>'
+# --- Save to history in Supabase ---
+try:
+    supabase.table("call_history").insert(
+        {
+            "user_id": user.id,
+            "number": number,
+            "country": f"{country} ({region})",
+            "qualifies": allowed,
+        }
+    ).execute()
+except Exception as e:
+    st.error(f"Error saving history: {e}")
 
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
 
@@ -395,6 +407,43 @@ if check_button:
             st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("</div>", unsafe_allow_html=True)  # close main-card
+# ---------- HISTORY SECTION ----------
+st.markdown("### Recent checks")
+
+try:
+    hist_res = (
+        supabase
+        .table("call_history")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", desc=True)
+        .limit(20)
+        .execute()
+    )
+    history = hist_res.data or []
+except Exception as e:
+    st.error(f"Error loading history: {e}")
+    history = []
+
+if not history:
+    st.write("No checks yet. Run a number to see it here.")
+else:
+    # Simple table
+    import pandas as pd
+
+    df = pd.DataFrame(
+        [
+            {
+                "When": row["created_at"][:19],
+                "Number": row["number"],
+                "Country": row["country"],
+                "Status": "QUALIFIES" if row["qualifies"] else "BLOCKED",
+            }
+            for row in history
+        ]
+    )
+    st.table(df)
+
 
 # ---------- BLOCKED COUNTRIES EXPANDER ----------
 with st.expander("View NOT-qualified country codes"):
@@ -406,3 +455,4 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
