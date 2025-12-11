@@ -253,7 +253,7 @@ if not is_paid:
         unsafe_allow_html=True
     )
 
-    stripe_checkout_url = "https://YOUR_PAYMENT_LINK_HERE"  # TODO: replace
+    stripe_checkout_url = "https://buy.stripe.com/cNifZg9wM56jdnz265fQI00"  # TODO: replace
 
     st.write("Once you've paid, your access will be activated by Shulver Data Works.")
     st.markdown(f"[Subscribe now]({stripe_checkout_url})", unsafe_allow_html=True)
@@ -346,4 +346,5 @@ if check_button:
 with st.expander("View NOT-qualified country codes"):
     st.write(sorted(BLOCKED_COUNTRIES))
     st.caption("These countries (plus all of Africa) do NOT qualify.")
+
 
