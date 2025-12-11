@@ -439,26 +439,29 @@ try:
         .limit(10)
         .execute()
     )
-  # --- Retrieve history ---
-history = []
-try:
-    hist_res = supabase.table("call_history").select("*").eq("user_id", user.id).order("id", desc=True).execute()
-    history = hist_res.data or []
-except Exception as e:
-    st.error(f"Error loading history: {e}")
+if logged_in:
+    # do result display
+    ...
 
+    # --- Retrieve history ---
+    history = []
+    try:
+        hist_res = supabase.table("call_history").select("*").eq("user_id", user.id).order("id", desc=True).execute()
+        history = hist_res.data or []
+    except Exception as e:
+        st.error(f"Error loading history: {e}")
 
-if history:
-    for row in history:
-        status = "QUALIFIES" if row.get("qualifies") else "NOT QUALIFIED"
-        st.markdown(
-            f"""
-            <div class="history-item">
-                <div><strong>{row.get('number','')}</strong> — {row.get('country','')}</div>
-                <div class="history-status">{status}</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
+    # --- Show history ---
+    if history:
+        st.subheader("Recently checked numbers")
+        for h in history:
+            st.markdown(
+                f"**{h['number']}** — {h['country']} ({h['qualifies']})",
+                unsafe_allow_html=True
+            )
+    else:
+        st.write("No history yet.")
+
         )
 else:
     st.markdown("<div class='history-empty'>No history yet.</div>", unsafe_allow_html=True)
@@ -470,6 +473,7 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
