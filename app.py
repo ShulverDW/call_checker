@@ -2,7 +2,9 @@ import streamlit as st
 from supabase import create_client, Client
 from logic import analyse_number, HOME_TZ, BLOCKED_COUNTRIES
 
-# ---------- PAGE + SUPABASE SETUP ----------
+# =========================
+# CONFIG & SUPABASE CLIENT
+# =========================
 
 st.set_page_config(
     page_title="Call Qualification Checker · Shulver DataWorks",
@@ -10,33 +12,37 @@ st.set_page_config(
     layout="centered",
 )
 
-# Read Supabase credentials from .streamlit/secrets.toml
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_ANON_KEY = st.secrets["SUPABASE_ANON_KEY"]
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-# ---------- GLOBAL STYLES (CSS) ----------
+# ===============
+# GLOBAL STYLES
+# ===============
+
 st.markdown(
     """
 <style>
 /* Global background & font */
 body, html, .stApp {
     background-color: #161616 !important;  /* Dark grey */
-    color: #f5f5f5 !important;            /* White-ish text */
+    color: #f5f5f5 !important;
     font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Remove big default header spacing */
-header[data-testid="stHeader"] { height: 0; }
+header[data-testid="stHeader"] {
+    height: 0px;
+}
 
-/* Center & tighten main content */
+/* Main content container */
 .block-container {
     max-width: 900px !important;
     padding-top: 2.5rem !important;
     padding-bottom: 2rem !important;
 }
 
-/* ---- Top navigation bar ---- */
+/* Top navigation bar */
 .top-nav {
     width: 100%;
     background-color: #004225;  /* British Racing Green */
@@ -60,18 +66,8 @@ header[data-testid="stHeader"] { height: 0; }
     color: #e0f0e8;
 }
 
-/* Make login / sign-up radio text white */
-div[role="radiogroup"] label {
-    color: #ffffff !important;
-}
-
-/* Ensure login card labels are white too */
-.login-card label {
-    color: #ffffff !important;
-}
-
-/* ---- Cards ---- */
-.card, .login-card {
+/* Generic cards */
+.card, .login-card, .sub-card {
     background-color: #242424;
     border-radius: 12px;
     border: 1px solid #323232;
@@ -79,16 +75,13 @@ div[role="radiogroup"] label {
     margin-bottom: 1.4rem;
 }
 
+/* Login card */
 .login-card {
     max-width: 520px;
     margin: 0 auto 1.6rem auto;
 }
 
-/* ---- Text ---- */
-h1, h2, h3 {
-    color: #ffffff;
-}
-
+/* Headlines */
 .hero-title {
     font-size: 1.7rem;
     font-weight: 800;
@@ -101,12 +94,17 @@ h1, h2, h3 {
     margin-bottom: 0.9rem;
 }
 
-/* Labels (Login, Email, etc.) */
+/* Labels (for inputs, radios, etc.) */
 label, .stRadio label {
     color: #f5f5f5 !important;
 }
 
-/* ---- Inputs ---- */
+/* Make login / sign-up radio text white */
+div[role="radiogroup"] label {
+    color: #ffffff !important;
+}
+
+/* Inputs */
 input, textarea {
     background-color: #1f1f1f !important;
     color: #ffffff !important;
@@ -114,12 +112,11 @@ input, textarea {
     border: 1px solid #4a4a4a !important;
 }
 
-/* Placeholder */
 input::placeholder {
     color: #b3b3b3 !important;
 }
 
-/* ---- Buttons ---- */
+/* Buttons */
 .stButton > button {
     background-color: #004225 !important;
     color: #ffffff !important;
@@ -134,7 +131,7 @@ input::placeholder {
     background-color: #006837 !important;
 }
 
-/* ---- Result card ---- */
+/* Result card */
 .result-card {
     background-color: #242424;
     border-radius: 12px;
@@ -219,6 +216,12 @@ input::placeholder {
     color: #d0d0d0;
 }
 
+.history-empty {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #a0a0a0;
+}
+
 /* Footer */
 .footer {
     text-align: center;
@@ -240,7 +243,10 @@ input::placeholder {
     unsafe_allow_html=True,
 )
 
-# ---------- SIMPLE TOP NAV ----------
+# ============
+# TOP NAV BAR
+# ============
+
 st.markdown(
     """
     <div class="top-nav">
@@ -251,13 +257,22 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ---------- AUTH / LOGIN ----------
+# ============
+# AUTH STATE
+# ============
+
 if "user" not in st.session_state:
     st.session_state["user"] = None
 
-if st.session_state["user"] is None:
+user = st.session_state["user"]
+
+# ============
+# LOGIN / SIGN UP
+# ============
+
+if user is None:
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
-    st.markdown("### 🔐 Account Login", unsafe_allow_html=False)
+    st.markdown("### 🔐 Account Login")
     st.write(
         "Create an account or log in to access the Shulver DataWorks Call Qualification Checker."
     )
@@ -284,20 +299,25 @@ if st.session_state["user"] is None:
                         st.error("Login failed. Please check your details.")
                     else:
                         st.session_state["user"] = res.user
-                        st.rerun()
+                        st.experimental_rerun()
             except Exception as e:
                 st.error(f"Auth error: {e}")
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
+# At this point, we have a logged-in user
 user = st.session_state["user"]
 
-# ---------- SUBSCRIPTION CHECK ----------
+# ============
+# SUBSCRIPTION CHECK
+# ============
+
 try:
     result = supabase.table("customers").select("*").eq("id", user.id).execute()
     rows = result.data or []
     if not rows:
+        # Create a row for this user with unpaid status
         supabase.table("customers").insert(
             {"id": user.id, "email": user.email, "is_paid": False}
         ).execute()
@@ -309,7 +329,7 @@ except Exception as e:
     st.stop()
 
 if not is_paid:
-    st.markdown('<div class="login-card">', unsafe_allow_html=True)
+    st.markdown('<div class="sub-card">', unsafe_allow_html=True)
     st.markdown("### 💳 Subscription required")
     st.write(
         "Your account is created, but you don't have an active subscription yet."
@@ -323,11 +343,14 @@ if not is_paid:
     st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
-# ---------- MAIN TOOL UI ----------
+# ============
+# MAIN TOOL UI
+# ============
+
 st.markdown('<div class="card">', unsafe_allow_html=True)
 st.markdown('<div class="hero-title">Call Qualification Checker</div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="hero-subtitle">Check if a number qualifies and see its country & local time in seconds.</div>',
+    '<div class="hero-subtitle">Check if a number qualifies and instantly see its country & local time.</div>',
     unsafe_allow_html=True,
 )
 
@@ -353,83 +376,90 @@ if check_button:
             else:
                 status_html = '<span class="pill pill-bad">DOES NOT QUALIFY</span>'
 
- # Save to history (optional)
-history_error_placeholder = st.empty()
-try:
-    supabase.table("call_history").insert(
-        {
-            "user_id": user.id,
-            "number": number,
-            "country": f"{country} ({region})",
-            "qualifies": allowed,
-        }
-    ).execute()
-except Exception as e:
-    # Show a small warning if history fails, but don't crash the app
-    history_error_placeholder.warning(f"History not saved: {e}")
+            # Save to history (best effort)
+            try:
+                supabase.table("call_history").insert(
+                    {
+                        "user_id": user.id,
+                        "number": number,
+                        "country": f"{country} ({region})",
+                        "qualifies": allowed,
+                    }
+                ).execute()
+            except Exception:
+                # Don't break the app if history table isn't ready
+                pass
 
+            # ----- Show result card -----
+            st.markdown('<div class="result-card">', unsafe_allow_html=True)
 
-         # --- Show result card ---
-st.markdown('<div class="result-card">', unsafe_allow_html=True)
+            # Number origin
+            st.markdown(
+                f"<div class='result-label'>Number origin</div>"
+                f"<div class='result-main'>{country} ({region})</div>",
+                unsafe_allow_html=True,
+            )
 
-# Number origin section
-st.markdown(
-    f"""
-    <div class='result-label'>Number origin</div>
-    <div class='result-main'>{country} ({region})</div>
-    """,
-    unsafe_allow_html=True,
-)
+            # Status
+            st.markdown(
+                f"<div class='result-label' style='margin-top:0.5rem;'>Status</div>"
+                f"{status_html}",
+                unsafe_allow_html=True,
+            )
 
-# Status section
-st.markdown(
-    f"""
-    <div class='result-label' style='margin-top:0.4rem;'>Status</div>
-    {status_html}
-    """,
-    unsafe_allow_html=True,
-)
+            # Time info
+            if result.get("has_timezone"):
+                diff = result["diff_hours"]
+                diff_str = f"{diff:+.1f} hours"
+                home_time = result["home_time"]
+                dest_time = result["dest_time"]
 
-# Timezone section (only if API included timezone data)
-if result.get("has_timezone"):
+                st.markdown(
+                    "<div class='result-label' style='margin-top:0.8rem;'>Time information</div>",
+                    unsafe_allow_html=True,
+                )
 
-    diff = result["diff_hours"]
-    diff_str = f"{diff:+.1f} hours"
+                st.markdown(
+                    f"""
+                    <div class="time-grid">
+                      <div>
+                        <div class="time-label">Your timezone</div>
+                        <div class="time-value">{HOME_TZ.zone}</div>
+                        <div class="time-label" style="margin-top:0.25rem;">Your local time</div>
+                        <div class="time-value">{home_time}</div>
+                      </div>
+                      <div>
+                        <div class="time-label">Their local time</div>
+                        <div class="time-value">{dest_time}</div>
+                        <div class="time-label" style="margin-top:0.25rem;">Difference</div>
+                        <div class="time-value">{diff_str}</div>
+                      </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.info("No timezone information available for this number.")
 
-    st.markdown(
-        f"""
-        <div class='result-label' style='margin-top:0.7rem;'>Time information</div>
+            st.markdown("</div>", unsafe_allow_html=True)  # close result-card
 
-        <div class='result-time'>
-            <div>
-                <div class='time-sub'>YOUR TIMEZONE</div>
-                <div>{result['your_timezone']}</div>
-                <div class='time-sub' style='margin-top:0.4rem;'>YOUR LOCAL TIME</div>
-                <div>{result['your_time']}</div>
-            </div>
+st.markdown("</div>", unsafe_allow_html=True)  # close main card
 
-            <div>
-                <div class='time-sub'>THEIR LOCAL TIME</div>
-                <div>{result['their_time']}</div>
-                <div class='time-sub' style='margin-top:0.4rem;'>DIFFERENCE</div>
-                <div>{diff_str}</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+# ============
+# BLOCKED LIST
+# ============
 
-st.markdown("</div>", unsafe_allow_html=True)
-
-
-# ---------- BLOCKED LIST ----------
 with st.expander("View NOT-qualified country codes"):
     st.write(sorted(BLOCKED_COUNTRIES))
     st.caption("These countries (plus all of Africa) do NOT qualify.")
 
-# ---------- HISTORY SECTION ----------
+# ============
+# HISTORY SECTION
+# ============
+
 st.markdown('<div class="history-title">Recently checked numbers</div>', unsafe_allow_html=True)
 
+history = []
 try:
     hist_res = (
         supabase.table("call_history")
@@ -439,50 +469,31 @@ try:
         .limit(10)
         .execute()
     )
-# --- LOAD HISTORY ---
-history = []
-if logged_in:
-    try:
-        hist_res = supabase.table("call_history") \
-            .select("*") \
-            .eq("user_id", user.id) \
-            .order("id", desc=True) \
-            .limit(10) \
-            .execute()
-
-        history = hist_res.data or []
-
-    except Exception as e:
-        st.error(f"Error loading history: {e}")
-
-
-    # --- Retrieve history ---
+    history = hist_res.data or []
+except Exception:
+    # If table or RLS not ready, just show "No history yet."
     history = []
-    try:
-        hist_res = supabase.table("call_history").select("*").eq("user_id", user.id).order("id", desc=True).execute()
-        history = hist_res.data or []
-    except Exception as e:
-        st.error(f"Error loading history: {e}")
 
-   # --- SHOW HISTORY ---
 if history:
-    st.subheader("Recently checked numbers")
-    for h in history:
+    for row in history:
+        status = "QUALIFIES" if row.get("qualifies") else "NOT QUALIFIED"
         st.markdown(
-            f"**{h['number']}** – {h['country']} ({h['qualifies']})",
-            unsafe_allow_html=True
+            f"""
+            <div class="history-item">
+                <div><strong>{row.get('number','')}</strong> — {row.get('country','')}</div>
+                <div class="history-status">{status}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 else:
     st.markdown("<div class='history-empty'>No history yet.</div>", unsafe_allow_html=True)
 
-# ---------- FOOTER ----------
+# ============
+# FOOTER
+# ============
+
 st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
-
-
-
-
-
-
