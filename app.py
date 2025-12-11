@@ -253,27 +253,31 @@ except Exception as e:
 
 # ---------- Paywall ----------
 if not is_paid:
+    if not is_paid:
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
-   st.markdown('<div class="login-title">💳 Subscription required</div>', unsafe_allow_html=True)
 
-st.markdown(
-    "<div class='login-subtitle'>"
-    "You’re almost there — activate your subscription to unlock the full Call Qualification Checker."
-    "</div>",
-    unsafe_allow_html=True
-)
-
-st.write("After subscribing, Shulver Data Works will enable your access.")
-
+    st.markdown(
+        '<div class="login-title">💳 Subscription required</div>',
+        unsafe_allow_html=True
     )
 
-    stripe_checkout_url = "https://buy.stripe.com/bJe9AScIYeGTabn121fQI02"  # TODO: replace
+    st.markdown(
+        "<div class='login-subtitle'>"
+        "You’re almost there — activate your subscription to unlock the full Call Qualification Checker."
+        "</div>",
+        unsafe_allow_html=True
+    )
 
-    st.write("Once you've paid, your access will be activated by Shulver Data Works.")
-    st.markdown(f"[Subscribe now]({stripe_checkout_url})", unsafe_allow_html=True)
+    st.write("After subscribing, Shulver Data Works will enable your access.")
+
+    st.markdown(
+        f"<a href='{stripe_checkout_url}' target='_blank'>**Subscribe now**</a>",
+        unsafe_allow_html=True
+    )
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
+
 
 # ---------- MAIN APP (only runs after login & payment) ----------
 
@@ -365,6 +369,7 @@ st.markdown(
     "<div class='footer'>© Shulver Data Works — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
