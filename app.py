@@ -369,58 +369,58 @@ except Exception as e:
     history_error_placeholder.warning(f"History not saved: {e}")
 
 
-            # ---- Show result card ----
-            st.markdown('<div class="result-card">', unsafe_allow_html=True)
+         # --- Show result card ---
+st.markdown('<div class="result-card">', unsafe_allow_html=True)
 
-            st.markdown(
-                f"<div class='result-label'>Number origin</div>"
-                f"<div class='result-main'>{country} ({region})</div>",
-                unsafe_allow_html=True,
-            )
+# Number origin section
+st.markdown(
+    f"""
+    <div class='result-label'>Number origin</div>
+    <div class='result-main'>{country} ({region})</div>
+    """,
+    unsafe_allow_html=True,
+)
 
-            st.markdown(
-                f"<div class='result-label' style='margin-top:0.5rem;'>Status</div>"
-                f"{status_html}",
-                unsafe_allow_html=True,
-            )
+# Status section
+st.markdown(
+    f"""
+    <div class='result-label' style='margin-top:0.4rem;'>Status</div>
+    {status_html}
+    """,
+    unsafe_allow_html=True,
+)
 
-            # Time info
-            if result.get("has_timezone"):
-                diff = result["diff_hours"]
-                diff_str = f"{diff:+.1f} hours"
-                home_time = result["home_time"]
-                dest_time = result["dest_time"]
+# Timezone section (only if API included timezone data)
+if result.get("has_timezone"):
 
-                st.markdown(
-                    "<div class='result-label' style='margin-top:0.8rem;'>Time information</div>",
-                    unsafe_allow_html=True,
-                )
+    diff = result["diff_hours"]
+    diff_str = f"{diff:+.1f} hours"
 
-                st.markdown(
-                    f"""
-                    <div class="time-grid">
-                      <div>
-                        <div class="time-label">Your timezone</div>
-                        <div class="time-value">{HOME_TZ.zone}</div>
-                        <div class="time-label" style="margin-top:0.25rem;">Your local time</div>
-                        <div class="time-value">{home_time}</div>
-                      </div>
-                      <div>
-                        <div class="time-label">Their local time</div>
-                        <div class="time-value">{dest_time}</div>
-                        <div class="time-label" style="margin-top:0.25rem;">Difference</div>
-                        <div class="time-value">{diff_str}</div>
-                      </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            else:
-                st.info("No timezone information available for this number.")
+    st.markdown(
+        f"""
+        <div class='result-label' style='margin-top:0.7rem;'>Time information</div>
 
-            st.markdown("</div>", unsafe_allow_html=True)
+        <div class='result-time'>
+            <div>
+                <div class='time-sub'>YOUR TIMEZONE</div>
+                <div>{result['your_timezone']}</div>
+                <div class='time-sub' style='margin-top:0.4rem;'>YOUR LOCAL TIME</div>
+                <div>{result['your_time']}</div>
+            </div>
 
-st.markdown("</div>", unsafe_allow_html=True)  # close main card
+            <div>
+                <div class='time-sub'>THEIR LOCAL TIME</div>
+                <div>{result['their_time']}</div>
+                <div class='time-sub' style='margin-top:0.4rem;'>DIFFERENCE</div>
+                <div>{diff_str}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+st.markdown("</div>", unsafe_allow_html=True)
+
 
 # ---------- BLOCKED LIST ----------
 with st.expander("View NOT-qualified country codes"):
@@ -466,4 +466,5 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
