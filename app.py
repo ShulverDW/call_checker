@@ -189,6 +189,99 @@ st.markdown("""
     <div class="nav-brand">Shulver Data Works</div>
 </div>
 """, unsafe_allow_html=True)
+# ---------- Supabase Auth: Sign Up / Login ----------
+if "user" not in st.session_state:
+    st.session_state["user"] = None
+
+if st.session_state["user"] is None:
+    # Centered login card
+    st.markdown('<div class="login-card">', unsafe_allow_html=True)
+    st.markdown('<div class="login-title">🔐 Account Login</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="login-subtitle">'
+        'Create an account or log in to access Call Qualification Checker.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+    mode = st.radio("Mode", ["Login", "Sign Up"], horizontal=True)
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Continue"):
+        if not email or not password:
+            st.error("Please enter both email and password.")
+        else:
+            try:
+                if mode == "Sign Up":
+                    # Create account
+                    res = supabase.auth.sign_up({"email": email, "password": password})
+                    st.success("Check your email to confirm your account, then come back and log in.")
+                else:
+                    # Login
+                    res = supabase.auth.sign_in_with_password(
+                        {"email": email, "password": password}
+                    )
+                    if res.user is None:
+                        st.error("Login failed. Please check your details.")
+                    else:
+                        st.session_state["user"] = res.user
+                        st.experimental_rerun()
+            except Exception as e:
+                st.error(f"Auth error: {e}")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.stop()
+
+user = st.session_state["user"]
+
+# ---------- Ensure customer row exists & check is_paid ----------
+try:
+    # Try to fetch existing customer row
+    result = supabase.table("customers").select("*").eq("id", user.id).execute()
+    rows = result.data or []
+    if not rows:
+        # Create a row for this user (unpaid by default)
+        supabase.table("customers").insert({
+            "id": user.id,
+            "email": user.email,
+            "is_paid": False,
+        }).execute()
+        is_paid = False
+    else:
+        is_paid = rows[0].get("is_paid", False)
+except Exception as e:
+    st.error(f"Error checking subscription status: {e}")
+    st.stop()
+
+# ---------- Paywall ----------
+if not is_paid:
+    st.markdown('<div class="login-card">', unsafe_allow_html=True)
+    st.markdown('<div class="login-title">💳 Subscription required</div>', unsafe_allow_html=True)
+    st.markdown(
+        "<div class='login-subtitle'>"
+        "Your account is created, but you don't have an active subscription yet."
+        "</div>",
+        unsafe_allow_html=True
+    )
+
+    # TODO: replace this with your real Stripe payment link
+    stripe_checkout_url = "https://YOUR_PAYMENT_LINK_HERE"
+
+    st.write("Once you've paid, your access will be activated by Shulver Data Works.")
+    st.markdown(f"[Subscribe now]({stripe_checkout_url})", unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.stop()
+
+# ---------- MAIN APP (only runs after login & payment) ----------
+st.markdown(
+    "<div class='shdw-title'>📞 Call Qualification Checker</div>"
+    "<div class='shdw-subtitle'>Check if a number qualifies, and see its country & local time in seconds.</div>",
+    unsafe_allow_html=True
+)
+
+# ...input, button, results, expander...
 
 # ---------- LOGIN GATE (NightHawk / Dragon) ----------
 if "authenticated" not in st.session_state:
@@ -308,5 +401,6 @@ if check_button:
 with st.expander("View NOT-qualified country codes"):
     st.write(sorted(BLOCKED_COUNTRIES))
     st.caption("These countries (plus all of Africa) do NOT qualify.")
+
 
 
