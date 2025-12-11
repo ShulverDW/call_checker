@@ -355,7 +355,7 @@ try:
 except Exception as e:
     st.error(f"Error saving history: {e}")
 
-         if check_button:
+    if check_button:
     result = analyse_number(number)
 
     if result["valid"]:
@@ -461,5 +461,6 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
