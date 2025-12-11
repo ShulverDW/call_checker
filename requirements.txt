@@ -1,4 +1,4 @@
 streamlit
 phonenumbers
 pytz
-supabase-py
+supabase
