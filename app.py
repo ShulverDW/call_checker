@@ -14,206 +14,205 @@ st.set_page_config(
     layout="centered",
 )
 
-# ---------- GLOBAL STYLING (CSS) ----------
-st.markdown(
-    """
-<style>
-/* === GLOBAL BACKGROUND === */
-.stApp {
-    background-color: #1c1c1c;   /* dark grey background */
-    color: #ffffff !important;
-    font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+/* ----------------------------
+   Global Layout & Background
+-----------------------------*/
+
+body, html, .stApp {
+    background-color: #1b1b1b !important; /* Dark grey */
+    color: #f2f2f2 !important;           /* White text */
+    font-family: 'Inter', sans-serif;
 }
 
-/* Bring main content a little lower on the page */
-.block-container {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
-    max-width: 900px !important;
+/* Remove top padding Streamlit adds */
+header[data-testid="stHeader"] {
+    height: 1rem;
 }
 
-/* Make all labels readable on dark background */
-label, .stRadio label, .stCheckbox label {
-    color: #ffffff !important;
-}
+/* ----------------------------
+   Branding Header Bar
+-----------------------------*/
 
-/* Markdown text */
-.stMarkdown p {
-    color: #ffffff !important;
-}
-
-/* === HEADER BAR (British Racing Green) === */
-.top-header {
+.top-nav {
     width: 100%;
-    background-color: #004225;         /* British racing green */
-    padding: 1.0rem 1.4rem;
-    border-radius: 12px;
-    margin-bottom: 1.8rem;             /* header sits lower */
-    color: #ffffff;
+    background-color: #004225; /* British Racing Green */
+    padding: 1.1rem 1.6rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 700;
+    border-bottom: 3px solid #002e19;
 }
 
-.header-title {
-    font-size: 1.4rem;
+.nav-title {
+    font-size: 1.7rem;
     font-weight: 800;
+    color: white;
+    letter-spacing: 0.5px;
 }
 
-.header-brand {
-    font-size: 1.0rem;
-    font-weight: 600;
+.nav-subtitle {
+    font-size: 0.95rem;
+    color: #d8e8df;
     opacity: 0.9;
 }
 
-/* === HERO TEXT === */
-.hero-title {
-    font-size: 1.7rem;
-    font-weight: 800;
-    margin-bottom: 0.3rem;
-    color: #ffffff;
-}
+/* ----------------------------
+   Input Fields
+-----------------------------*/
 
-.hero-subtitle {
-    color: #dddddd;
-    font-size: 0.95rem;
-    margin-bottom: 1rem;
-}
-
-/* === CARDS (login + main) === */
-.main-card,
-.login-card {
-    background-color: #2b2b2b;   /* slightly lighter grey */
-    padding: 1.4rem;
-    border-radius: 14px;
-    border: 1px solid #3a3a3a;
-    margin-bottom: 1.6rem;
-}
-
-.login-card {
-    max-width: 520px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.login-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 0.3rem;
-}
-
-.login-subtitle {
-    font-size: 0.9rem;
-    color: #cccccc;
-    margin-bottom: 0.8rem;
-}
-
-/* === BUTTONS === */
-.stButton > button {
-    background-color: #004225 !important;
+input, textarea {
+    background-color: #2b2b2b !important;
     color: #ffffff !important;
-    border-radius: 8px !important;
-    padding: 0.55rem 1.2rem !important;
-    font-weight: 600 !important;
+    border: 1px solid #555 !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    font-size: 1rem !important;
+}
+
+input::placeholder {
+    color: #bfbfbf !important;
+}
+
+/* Radio buttons text fix */
+.stRadio label {
+    color: #f2f2f2 !important;
+}
+
+/* ----------------------------
+   Buttons
+-----------------------------*/
+
+.stButton button {
+    background-color: #004225 !important;
+    color: white !important;
+    font-weight: 700 !important;
+    padding: 0.7rem 1.3rem !important;
+    border-radius: 10px !important;
     border: none !important;
+    transition: 0.2s ease-in-out;
+    font-size: 1rem;
 }
 
-.stButton > button:hover {
-    background-color: #006b3c !important;
+.stButton button:hover {
+    background-color: #006837 !important;
+    transform: scale(1.03);
 }
 
-/* === RESULT CARD === */
-.result-card {
-    background-color: #2b2b2b;
-    border: 1px solid #004225;
-    padding: 1.2rem;
-    border-radius: 12px;
-    margin-top: 0.9rem;
+/* ----------------------------
+   Cards (Results + History)
+-----------------------------*/
+
+.result-card, .history-item {
+    background: #262626;
+    border: 1px solid #3b3b3b;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-top: 1.2rem;
 }
 
 .result-label {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    opacity: 0.7;
+    font-size: 1rem;
+    color: #cccccc;
 }
 
-/* Bigger, bold main result text */
 .result-main {
     font-size: 1.45rem;
-    font-weight: 800;
-    margin-bottom: 0.4rem;
-    color: #ffffff;
+    font-weight: 600;
+    margin-top: 0.2rem;
 }
 
-/* Status pills */
-.pill {
-    display: inline-block;
-    padding: 0.25rem 0.9rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
+/* ----------------------------
+   Status Pills
+-----------------------------*/
 
 .pill-ok {
-    background-color: #004225;
-    color: #ffffff;
+    background: #1c6e39;
+    padding: 6px 12px;
+    border-radius: 25px;
+    font-weight: 700;
+    color: white;
+    display: inline-block;
+    margin-top: 5px;
 }
 
 .pill-bad {
-    background-color: #7a1a1a;
-    color: #ffffff;
+    background: #7a0000;
+    padding: 6px 12px;
+    border-radius: 25px;
+    font-weight: 700;
+    color: white;
+    display: inline-block;
+    margin-top: 5px;
 }
 
-/* Time grid */
+/* ----------------------------
+   Time Info
+-----------------------------*/
+
 .time-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 2rem;
-    row-gap: 0.6rem;
-    font-size: 0.9rem;
-    margin-top: 0.7rem;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    gap: 40px;
 }
 
-.time-label {
+.small-label {
     font-size: 0.75rem;
-    text-transform: uppercase;
-    opacity: 0.8;
+    color: #bbbbbb;
 }
 
-.time-value {
-    font-weight: 600;
+.small-value {
+    font-size: 1rem;
+    color: white;
 }
 
-/* Expander */
-div[role="button"][data-baseweb="accordion"] {
-    background-color: #2b2b2b !important;
-    color: #ffffff !important;
+/* ----------------------------
+   History Section
+-----------------------------*/
+
+.history-title {
+    margin-top: 2.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e8e8e8;
 }
 
-/* Footer */
-.footer {
-    text-align: center;
-    color: #aaaaaa;
-    font-size: 0.8rem;
-    margin-top: 1.8rem;
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-</style>
-""",
-    unsafe_allow_html=True,
-)
 
-# ---------- HEADER BAR ----------
-st.markdown(
-    """
-<div class="top-header">
-    <div class="header-title">Call Qualification Checker</div>
-    <div class="header-brand">Shulver DataWorks</div>
-</div>
-""",
-    unsafe_allow_html=True,
-)
+.history-status {
+    font-size: 0.85rem;
+    color: #d1d1d1;
+}
+
+.history-empty {
+    margin-top: 1rem;
+    color: #999;
+}
+
+/* ----------------------------
+   Mobile Responsiveness
+-----------------------------*/
+
+@media (max-width: 768px) {
+
+    .time-grid {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-title {
+        font-size: 1.4rem;
+    }
+
+    .result-main {
+        font-size: 1.25rem;
+    }
+}
+
 
 # ---------- AUTH / LOGIN ----------
 
@@ -356,102 +355,99 @@ if check_button:
             st.error(f"Error saving history: {e}")
 
         # --- Show result card ---
-        st.markdown('<div class="result-card">', unsafe_allow_html=True)
+       # --- SHOW RESULT CARD ---
+st.markdown('<div class="result-card">', unsafe_allow_html=True)
 
-        st.markdown(
-            f"<div class='result-label'>Number origin</div>"
-            f"<div class='result-main'>{country} ({region})</div>",
-            unsafe_allow_html=True,
-        )
+# Number origin
+st.markdown(
+    f"""
+    <div class="result-label">Number origin</div>
+    <div class="result-main">{country} ({region})</div>
+    """,
+    unsafe_allow_html=True,
+)
 
-        st.markdown(
-            f"<div class='result-label' style='margin-top:0.4rem;'>Status</div>"
-            f"{status_html}",
-            unsafe_allow_html=True,
-        )
+# Status (qualifies / not)
+st.markdown(
+    f"""
+    <div class="result-label" style="margin-top:0.4rem;">Status</div>
+    {status_html}
+    """,
+    unsafe_allow_html=True,
+)
+
+# Timezone information
+if result.get("has_timezone"):
+    diff = result["diff_hours"]
+    diff_str = f"{diff:+.1f} hours"
+    st.markdown(
+        """
+        <div class="result-label" style="margin-top:0.7rem;">Time Information</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+        <div class="time-grid">
+            <div>
+                <div class="small-label">YOUR TIMEZONE</div>
+                <div class="small-value">{user_tz}</div>
+                <div class="small-label" style="margin-top:0.3rem;">YOUR LOCAL TIME</div>
+                <div class="small-value">{your_time}</div>
+            </div>
+
+            <div>
+                <div class="small-label">THEIR LOCAL TIME</div>
+                <div class="small-value">{their_time}</div>
+                <div class="small-label" style="margin-top:0.3rem;">DIFFERENCE</div>
+                <div class="small-value">{diff_str}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# Close the result card container
+st.markdown('</div>', unsafe_allow_html=True)
 
 
-
-            st.markdown(
-                f"<div class='result-label' style='margin-top:0.4rem;'>Status</div>"
-                f"{status_html}",
-                unsafe_allow_html=True,
-            )
-
-            if result.get("has_timezone"):
-                diff = result["diff_hours"]
-                diff_str = f"{diff:+.1f} hours"
-
-                st.markdown(
-                    "<div class='result-label' style='margin-top:0.7rem;'>Time information</div>",
-                    unsafe_allow_html=True,
-                )
-
-                st.markdown(
-                    f"""
-                    <div class="time-grid">
-                      <div>
-                        <div class="time-label">Your timezone</div>
-                        <div class="time-value">{HOME_TZ.zone}</div>
-                        <div class="time-label" style="margin-top:0.15rem;">Your local time</div>
-                        <div class="time-value">{result['home_time']}</div>
-                      </div>
-                      <div>
-                        <div class="time-label">Their local time</div>
-                        <div class="time-value">{result['dest_time']}</div>
-                        <div class="time-label" style="margin-top:0.15rem;">Difference</div>
-                        <div class="time-value">{diff_str}</div>
-                      </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            else:
-                st.info(
-                    result.get(
-                        "error", "No timezone info available for this number."
-                    )
-                )
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("</div>", unsafe_allow_html=True)  # close main-card
-# ---------- HISTORY SECTION ----------
-st.markdown("### Recent checks")
-
+# --- SAVE TO HISTORY ---
 try:
-    hist_res = (
-        supabase
-        .table("call_history")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", desc=True)
-        .limit(20)
-        .execute()
-    )
-    history = hist_res.data or []
+    supabase.table("call_history").insert({
+        "user_id": user.id,
+        "number": number,
+        "country": f"{country} ({region})",
+        "qualifies": allowed
+    }).execute()
+
 except Exception as e:
-    st.error(f"Error loading history: {e}")
-    history = []
+    st.error(f"Error saving history: {e}")
 
-if not history:
-    st.write("No checks yet. Run a number to see it here.")
+
+# --- SHOW HISTORY ---
+st.markdown("<h3 class='history-title'>Previously Checked Numbers</h3>", unsafe_allow_html=True)
+
+history = supabase.table("call_history") \
+    .select("*") \
+    .eq("user_id", user.id) \
+    .order("created_at", desc=True) \
+    .limit(5) \
+    .execute()
+
+if history.data:
+    for row in history.data:
+        st.markdown(
+            f"""
+            <div class="history-item">
+                <div><strong>{row['number']}</strong> — {row['country']}</div>
+                <div class="history-status">{'QUALIFIES' if row['qualifies'] else 'NOT QUALIFIED'}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 else:
-    # Simple table
-    import pandas as pd
-
-    df = pd.DataFrame(
-        [
-            {
-                "When": row["created_at"][:19],
-                "Number": row["number"],
-                "Country": row["country"],
-                "Status": "QUALIFIES" if row["qualifies"] else "BLOCKED",
-            }
-            for row in history
-        ]
-    )
-    st.table(df)
+    st.markdown("<div class='history-empty'>No history yet.</div>", unsafe_allow_html=True)
 
 
 # ---------- BLOCKED COUNTRIES EXPANDER ----------
@@ -464,6 +460,7 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
