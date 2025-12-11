@@ -7,9 +7,13 @@ SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_ANON_KEY = st.secrets["SUPABASE_ANON_KEY"]
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-# ---------- LOGIN CREDENTIALS ----------
-USERNAME = "NightHawk"
-PASSWORD = "Dragon"
+# ---------- LOGIN GATE (NightHawk / Dragon) ----------
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
+
+if not st.session_state["authenticated"]:
+    ...
+    st.stop()
 
 # ---------- PAGE SETUP ----------
 st.set_page_config(
@@ -304,4 +308,5 @@ if check_button:
 with st.expander("View NOT-qualified country codes"):
     st.write(sorted(BLOCKED_COUNTRIES))
     st.caption("These countries (plus all of Africa) do NOT qualify.")
+
 
