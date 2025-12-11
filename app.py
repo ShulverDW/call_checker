@@ -24,10 +24,10 @@ st.markdown(
     color: #e5e7eb;
 }
 
-/* Constrain main content width and center it */
+/* Constrain content & bring it higher on the page */
 .block-container {
-    padding-top: 1.5rem !important;
-    padding-bottom: 2.5rem !important;
+    padding-top: 0.6rem !important;   /* was 1.5rem */
+    padding-bottom: 2.3rem !important;
     max-width: 980px !important;
     margin: 0 auto !important;
 }
@@ -37,13 +37,13 @@ st.markdown(
     width: 100%;
     background: linear-gradient(90deg, #020617 0%, #020b10 60%, #020617 100%);
     border-radius: 18px;
-    padding: 0.85rem 1.4rem;
+    padding: 0.75rem 1.4rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     border: 1px solid rgba(148, 163, 184, 0.25);
     box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5);
-    margin-bottom: 1.8rem;
+    margin-bottom: 1.2rem;   /* tighter gap below nav */
 }
 
 .sdw-nav-left {
@@ -53,8 +53,8 @@ st.markdown(
 }
 
 .sdw-logo-pill {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     border-radius: 999px;
     background: radial-gradient(circle, #22c55e 0%, #16a34a 40%, #052e16 100%);
     display: flex;
@@ -62,18 +62,18 @@ st.markdown(
     justify-content: center;
     font-weight: 800;
     color: #020617;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .sdw-brand {
     font-weight: 800;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     letter-spacing: 0.05em;
     color: #22c55e;
 }
 
 .sdw-nav-right {
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     text-transform: uppercase;
     color: #9ca3af;
     letter-spacing: 0.16em;
@@ -84,37 +84,55 @@ st.markdown(
     font-size: 1.9rem;
     font-weight: 800;
     letter-spacing: 0.01em;
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.2rem;
     background: linear-gradient(120deg, #f9fafb, #22c55e);
     -webkit-background-clip: text;
     color: transparent;
 }
 
 .hero-subtitle {
-    font-size: 0.98rem;
+    font-size: 0.95rem;
     color: #9ca3af;
-    margin-bottom: 1.1rem;
+    margin-bottom: 1.0rem;
 }
 
-/* === INPUT / FORM CARD ============================================= */
+/* === MAIN CARD ===================================================== */
 .main-card {
     background: radial-gradient(circle at top left, #1f2937 0%, #020617 60%);
     border-radius: 18px;
-    padding: 1.3rem 1.4rem 1.6rem 1.4rem;
+    padding: 1.1rem 1.4rem 1.4rem 1.4rem;
     border: 1px solid rgba(148, 163, 184, 0.35);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.1rem;
 }
 
-/* Streamlit text input tweaks */
-div[data-baseweb="input"] {
+/* === TEXT INPUTS =================================================== */
+
+/* Outer wrapper of text inputs */
+.stTextInput > div > div {
     background-color: #020617 !important;
     border-radius: 999px !important;
-    border: 1px solid rgba(148, 163, 184, 0.7) !important;
+    border: 1px solid rgba(148,163,184,0.7) !important;
 }
 
-div[data-baseweb="input"] input {
-    color: #e5e7eb !important;
+/* Actual input element */
+.stTextInput > div > div > input {
+    color: #f9fafb !important;                  /* brighter text */
+    background-color: transparent !important;   /* use wrapper bg */
+}
+
+/* Placeholder text */
+.stTextInput input::placeholder {
+    color: #6b7280 !important;
+}
+
+/* === RADIO (Login / Sign Up) ====================================== */
+.stRadio > label {
+    color: #e5e7eb !important;   /* group label */
+}
+
+.stRadio div[role="radiogroup"] label {
+    color: #e5e7eb !important;   /* options "Login" / "Sign Up" */
 }
 
 /* === BUTTONS ======================================================= */
@@ -137,8 +155,8 @@ div[data-baseweb="input"] input {
 /* === LOGIN & PAYWALL CARD ========================================== */
 .login-card {
     max-width: 520px;
-    margin: 1.6rem auto;
-    padding: 1.5rem 1.6rem 1.6rem 1.6rem;
+    margin: 0.8rem auto;    /* was 1.6rem */
+    padding: 1.4rem 1.5rem 1.5rem 1.5rem;
     background: radial-gradient(circle at top left, #111827 0%, #020617 70%);
     border-radius: 18px;
     border: 1px solid rgba(148, 163, 184, 0.35);
@@ -148,7 +166,7 @@ div[data-baseweb="input"] input {
 .login-title {
     font-size: 1.2rem;
     font-weight: 700;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.25rem;
 }
 
 .login-subtitle {
@@ -175,9 +193,10 @@ div[data-baseweb="input"] input {
     margin-bottom: 0.1rem;
 }
 
+/* Bigger main result text (country) */
 .result-main {
-    font-size: 1.15rem;
-    font-weight: 700;
+    font-size: 1.35rem;   /* was ~1.15rem */
+    font-weight: 800;
     color: #e5e7eb;
 }
 
@@ -229,7 +248,7 @@ div[role="button"][data-baseweb="accordion"] {
 
 /* === FOOTER ======================================================== */
 .footer {
-    margin-top: 2.2rem;
+    margin-top: 2.0rem;
     font-size: 0.78rem;
     color: #6b7280;
     text-align: center;
@@ -332,7 +351,7 @@ if not is_paid:
 
     st.write("After subscribing, Shulver DataWorks will enable your access.")
 
-    # IMPORTANT: use your real Stripe payment link here
+    # IMPORTANT: replace with your real Stripe link
     stripe_checkout_url = "https://YOUR_REAL_STRIPE_LINK_HERE"
 
     st.markdown(
