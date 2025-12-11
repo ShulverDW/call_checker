@@ -451,20 +451,14 @@ if logged_in:
     except Exception as e:
         st.error(f"Error loading history: {e}")
 
-    # --- Show history ---
-    if history:
-        st.subheader("Recently checked numbers")
-        for h in history:
-            st.markdown(
-                f"**{h['number']}** — {h['country']} ({h['qualifies']})",
-                unsafe_allow_html=True
-            )
-    else:
-        st.write("No history yet.")
-
+   # --- SHOW HISTORY ---
+if history:
+    st.subheader("Recently checked numbers")
+    for h in history:
+        st.markdown(
+            f"**{h['number']}** – {h['country']} ({h['qualifies']})",
+            unsafe_allow_html=True
         )
-else:
-    st.markdown("<div class='history-empty'>No history yet.</div>", unsafe_allow_html=True)
 else:
     st.markdown("<div class='history-empty'>No history yet.</div>", unsafe_allow_html=True)
 
@@ -473,6 +467,7 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
