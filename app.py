@@ -216,7 +216,7 @@ if st.session_state["user"] is None:
                         st.error("Login failed. Please check your details.")
                     else:
                         st.session_state["user"] = res.user
-                        st.experimental_rerun()
+                        st.rerun()
             except Exception as e:
                 st.error(f"Auth error: {e}")
 
@@ -346,3 +346,4 @@ if check_button:
 with st.expander("View NOT-qualified country codes"):
     st.write(sorted(BLOCKED_COUNTRIES))
     st.caption("These countries (plus all of Africa) do NOT qualify.")
+
