@@ -60,6 +60,16 @@ header[data-testid="stHeader"] { height: 0; }
     color: #e0f0e8;
 }
 
+/* Make login / sign-up radio text white */
+div[role="radiogroup"] label {
+    color: #ffffff !important;
+}
+
+/* Ensure login card labels are white too */
+.login-card label {
+    color: #ffffff !important;
+}
+
 /* ---- Cards ---- */
 .card, .login-card {
     background-color: #242424;
@@ -343,19 +353,21 @@ if check_button:
             else:
                 status_html = '<span class="pill pill-bad">DOES NOT QUALIFY</span>'
 
-            # Save to history (optional)
-            try:
-                supabase.table("call_history").insert(
-                    {
-                        "user_id": user.id,
-                        "number": number,
-                        "country": f"{country} ({region})",
-                        "qualifies": allowed,
-                    }
-                ).execute()
-            except Exception:
-                # Don't block the app if history table isn't set up yet
-                pass
+ # Save to history (optional)
+history_error_placeholder = st.empty()
+try:
+    supabase.table("call_history").insert(
+        {
+            "user_id": user.id,
+            "number": number,
+            "country": f"{country} ({region})",
+            "qualifies": allowed,
+        }
+    ).execute()
+except Exception as e:
+    # Show a small warning if history fails, but don't crash the app
+    history_error_placeholder.warning(f"History not saved: {e}")
+
 
             # ---- Show result card ----
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
@@ -427,8 +439,9 @@ try:
         .limit(10)
         .execute()
     )
-    history = hist_res.data or []
-except Exception:
+   history = hist_res.data or []
+except Exception as e:
+    st.warning(f"Could not load history: {e}")
     history = []
 
 if history:
@@ -445,9 +458,12 @@ if history:
         )
 else:
     st.markdown("<div class='history-empty'>No history yet.</div>", unsafe_allow_html=True)
+else:
+    st.markdown("<div class='history-empty'>No history yet.</div>", unsafe_allow_html=True)
 
 # ---------- FOOTER ----------
 st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
