@@ -1,3 +1,20 @@
+import streamlit as st
+from supabase import create_client, Client
+from logic import analyse_number, HOME_TZ, BLOCKED_COUNTRIES
+
+# ---------- SUPABASE CLIENT ----------
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_ANON_KEY = st.secrets["SUPABASE_ANON_KEY"]
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+# ---------- PAGE SETUP ----------
+st.set_page_config(
+    page_title="Call Qualification Checker · Shulver DataWorks",
+    page_icon="📞",
+    layout="centered",
+)
+
+
 st.markdown("""
 <style>
 
@@ -128,3 +145,4 @@ label, .stRadio label {
 
 </style>
 """, unsafe_allow_html=True)
+
