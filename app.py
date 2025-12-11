@@ -2,11 +2,6 @@ import streamlit as st
 from supabase import create_client, Client
 from logic import analyse_number, HOME_TZ, BLOCKED_COUNTRIES
 
-# ---------- SUPABASE CLIENT ----------
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_ANON_KEY = st.secrets["SUPABASE_ANON_KEY"]
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
 # ---------- PAGE SETUP ----------
 st.set_page_config(
     page_title="Call Qualification Checker · Shulver DataWorks",
@@ -14,13 +9,18 @@ st.set_page_config(
     layout="centered",
 )
 
+# ---------- GLOBAL STYLES ----------
+st.markdown(
+    """
+<style>
+
 /* ----------------------------
    Global Layout & Background
 -----------------------------*/
 
 body, html, .stApp {
-    background-color: #1b1b1b !important; /* Dark grey */
-    color: #f2f2f2 !important;           /* White text */
+    background-color: #1b1b1b !important;  /* Dark grey */
+    color: #f2f2f2 !important;            /* White text */
     font-family: 'Inter', sans-serif;
 }
 
@@ -73,7 +73,7 @@ input::placeholder {
     color: #bfbfbf !important;
 }
 
-/* Radio buttons text fix */
+/* Radio buttons text */
 .stRadio label {
     color: #f2f2f2 !important;
 }
@@ -198,7 +198,6 @@ input::placeholder {
 -----------------------------*/
 
 @media (max-width: 768px) {
-
     .time-grid {
         flex-direction: column;
         gap: 15px;
@@ -212,6 +211,11 @@ input::placeholder {
         font-size: 1.25rem;
     }
 }
+
+</style>
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ---------- AUTH / LOGIN ----------
@@ -460,6 +464,7 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
