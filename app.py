@@ -34,7 +34,17 @@ header[data-testid="stHeader"] {
     height: 0;
 }
 
-/* === TOP NAVBAR ===================================================== */
+# ---------- TOP NAVBAR ----------
+st.markdown(
+    """
+    <div class="top-navbar">
+        <div class="nav-title">Call Qualification Checker</div>
+        <div class="nav-brand">Shulver Data Works</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 .top-navbar {
     width: 100%;
     background-color: #004225;
@@ -369,6 +379,7 @@ st.markdown(
     "<div class='footer'>© Shulver Data Works — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
 
