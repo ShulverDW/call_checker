@@ -355,13 +355,19 @@ try:
 except Exception as e:
     st.error(f"Error saving history: {e}")
 
-            st.markdown('<div class="result-card">', unsafe_allow_html=True)
+         if check_button:
+    result = analyse_number(number)
 
-            st.markdown(
-                f"<div class='result-label'>Number origin</div>"
-                f"<div class='result-main'>{country} ({region})</div>",
-                unsafe_allow_html=True,
-            )
+    if result["valid"]:
+        allowed = result["allowed"]
+        country = result["country"]
+        region = result["region"]
+
+        # correct indentation
+        st.markdown('<div class="result-card">', unsafe_allow_html=True)
+        st.markdown(f'<div class="result-main">{country} ({region})</div>', unsafe_allow_html=True)
+        ...
+
 
             st.markdown(
                 f"<div class='result-label' style='margin-top:0.4rem;'>Status</div>"
@@ -455,4 +461,5 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
