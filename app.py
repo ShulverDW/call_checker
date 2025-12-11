@@ -439,10 +439,14 @@ try:
         .limit(10)
         .execute()
     )
-   history = hist_res.data or []
+  # --- Retrieve history ---
+history = []
+try:
+    hist_res = supabase.table("call_history").select("*").eq("user_id", user.id).order("id", desc=True).execute()
+    history = hist_res.data or []
 except Exception as e:
-    st.warning(f"Could not load history: {e}")
-    history = []
+    st.error(f"Error loading history: {e}")
+
 
 if history:
     for row in history:
@@ -466,5 +470,6 @@ st.markdown(
     "<div class='footer'>© Shulver DataWorks — Call Qualification Checker</div>",
     unsafe_allow_html=True,
 )
+
 
 
