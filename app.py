@@ -2,18 +2,10 @@ import streamlit as st
 from supabase import create_client, Client
 from logic import analyse_number, HOME_TZ, BLOCKED_COUNTRIES
 
-# Supabase client using Streamlit secrets
+# ---------- SUPABASE CLIENT ----------
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_ANON_KEY = st.secrets["SUPABASE_ANON_KEY"]
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-# ---------- LOGIN GATE (NightHawk / Dragon) ----------
-if "authenticated" not in st.session_state:
-    st.session_state["authenticated"] = False
-
-if not st.session_state["authenticated"]:
-    ...
-    st.stop()
 
 # ---------- PAGE SETUP ----------
 st.set_page_config(
@@ -189,12 +181,12 @@ st.markdown("""
     <div class="nav-brand">Shulver Data Works</div>
 </div>
 """, unsafe_allow_html=True)
+
 # ---------- Supabase Auth: Sign Up / Login ----------
 if "user" not in st.session_state:
     st.session_state["user"] = None
 
 if st.session_state["user"] is None:
-    # Centered login card
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     st.markdown('<div class="login-title">🔐 Account Login</div>', unsafe_allow_html=True)
     st.markdown(
@@ -214,11 +206,9 @@ if st.session_state["user"] is None:
         else:
             try:
                 if mode == "Sign Up":
-                    # Create account
                     res = supabase.auth.sign_up({"email": email, "password": password})
                     st.success("Check your email to confirm your account, then come back and log in.")
                 else:
-                    # Login
                     res = supabase.auth.sign_in_with_password(
                         {"email": email, "password": password}
                     )
@@ -237,11 +227,9 @@ user = st.session_state["user"]
 
 # ---------- Ensure customer row exists & check is_paid ----------
 try:
-    # Try to fetch existing customer row
     result = supabase.table("customers").select("*").eq("id", user.id).execute()
     rows = result.data or []
     if not rows:
-        # Create a row for this user (unpaid by default)
         supabase.table("customers").insert({
             "id": user.id,
             "email": user.email,
@@ -265,8 +253,7 @@ if not is_paid:
         unsafe_allow_html=True
     )
 
-    # TODO: replace this with your real Stripe payment link
-    stripe_checkout_url = "https://YOUR_PAYMENT_LINK_HERE"
+    stripe_checkout_url = "https://YOUR_PAYMENT_LINK_HERE"  # TODO: replace
 
     st.write("Once you've paid, your access will be activated by Shulver Data Works.")
     st.markdown(f"[Subscribe now]({stripe_checkout_url})", unsafe_allow_html=True)
@@ -275,45 +262,6 @@ if not is_paid:
     st.stop()
 
 # ---------- MAIN APP (only runs after login & payment) ----------
-st.markdown(
-    "<div class='shdw-title'>📞 Call Qualification Checker</div>"
-    "<div class='shdw-subtitle'>Check if a number qualifies, and see its country & local time in seconds.</div>",
-    unsafe_allow_html=True
-)
-
-# ...input, button, results, expander...
-
-# ---------- LOGIN GATE (NightHawk / Dragon) ----------
-if "authenticated" not in st.session_state:
-    st.session_state["authenticated"] = False
-
-if not st.session_state["authenticated"]:
-    st.markdown('<div class="login-card">', unsafe_allow_html=True)
-    st.markdown('<div class="login-title">🔐 Secure Access</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="login-subtitle">'
-        'Enter your credentials to access the Call Qualification Checker.'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    username_input = st.text_input("Username")
-    password_input = st.text_input("Password", type="password")
-
-    login_clicked = st.button("Login")
-
-    if login_clicked:
-        if username_input == USERNAME and password_input == PASSWORD:
-            st.session_state["authenticated"] = True
-            st.success("Access granted.")
-            st.rerun()
-        else:
-            st.error("Incorrect username or password.")
-
-    st.markdown("</div>", unsafe_allow_html=True)  # close login-card
-    st.stop()
-
-# ---------- MAIN APP (only runs after login) ----------
 
 st.markdown(
     "<div class='shdw-title'>📞 Call Qualification Checker</div>"
@@ -342,13 +290,11 @@ if check_button:
             country = result["country"]
             region = result["region"]
 
-            # Status pill
             if allowed:
                 status_html = '<span class="pill pill-ok">QUALIFIES</span>'
             else:
                 status_html = '<span class="pill pill-bad">DOES NOT QUALIFY</span>'
 
-            # Result card
             st.markdown("<div class='result-card'>", unsafe_allow_html=True)
 
             st.markdown(
@@ -363,7 +309,6 @@ if check_button:
                 unsafe_allow_html=True
             )
 
-            # Time info
             if result.get("has_timezone"):
                 diff = result["diff_hours"]
                 diff_str = f"{diff:+.1f} hours"
@@ -395,12 +340,9 @@ if check_button:
             else:
                 st.info(result.get("error", "No timezone info available for this number."))
 
-            st.markdown("</div>", unsafe_allow_html=True)  # close result-card
+            st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------- BLOCKED COUNTRIES EXPANDER ----------
 with st.expander("View NOT-qualified country codes"):
     st.write(sorted(BLOCKED_COUNTRIES))
     st.caption("These countries (plus all of Africa) do NOT qualify.")
-
-
-
