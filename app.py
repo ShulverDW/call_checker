@@ -19,40 +19,48 @@ st.markdown("""
 <style>
 /* === GLOBAL ========================================================== */
 .stApp {
-    background-color: #e3e3e3 !important;
+    background: linear-gradient(135deg, #e6ebe8, #dfe3e8);
 }
 
 .block-container {
-    padding-top: 1.8rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 1.6rem !important;
+    padding-bottom: 2.2rem !important;
+    max-width: 900px !important;
+    margin: 0 auto !important;
 }
 
-/* === TOP GREEN NAVBAR =============================================== */
+/* Remove default Streamlit padding at the very top */
+header[data-testid="stHeader"] {
+    height: 0;
+}
+
+/* === TOP NAVBAR ===================================================== */
 .top-navbar {
     width: 100%;
     background-color: #004225;
-    padding: 1rem 1.4rem;
+    padding: 0.9rem 1.4rem;
     color: white;
-    border-radius: 0 0 12px 12px;
+    border-radius: 14px;
     margin-bottom: 1.8rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
 
 .nav-title {
-    font-size: 1.35rem;
-    font-weight: 700;
+    font-size: 1.45rem;
+    font-weight: 800;
     letter-spacing: 0.03em;
 }
 
 .nav-brand {
     font-size: 0.95rem;
     font-weight: 500;
-    opacity: 0.9;
+    opacity: 0.95;
 }
 
-/* === HEADER SECTION ================================================== */
+/* === HEADER SECTION ================================================= */
 .shdw-title {
     font-size: 2rem;
     font-weight: 800;
@@ -61,61 +69,61 @@ st.markdown("""
 }
 
 .shdw-subtitle {
-    font-size: 1rem;
+    font-size: 0.98rem;
     color: #444444;
     margin-top: 0.3rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 
-/* === BUTTONS ========================================================== */
+/* === BUTTONS ======================================================== */
 .stButton>button {
     background-color: #004225 !important;
     color: white !important;
     border: none !important;
-    padding: 0.65rem 1.3rem !important;
-    border-radius: 0.45rem !important;
+    padding: 0.7rem 1.4rem !important;
+    border-radius: 0.6rem !important;
     font-size: 1rem !important;
     font-weight: 600 !important;
     cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .stButton>button:hover {
     background-color: #00361d !important;
 }
 
-/* === LOGIN CARD ====================================================== */
+/* === LOGIN & PAYWALL CARDS ========================================= */
 .login-card {
-    max-width: 420px;
-    margin: 0 auto;
-    margin-top: 1.5rem;
-    padding: 1.2rem 1.4rem;
+    max-width: 460px;
+    margin: 1.5rem auto;
+    padding: 1.3rem 1.6rem;
     background-color: #ffffff;
-    border-radius: 0.9rem;
-    border: 1px solid #dddddd;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    border-radius: 1.1rem;
+    border: 1px solid #dcdcdc;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
 .login-title {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.35rem;
 }
 
 .login-subtitle {
     font-size: 0.9rem;
     color: #555555;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.9rem;
 }
 
-/* === RESULT CARD ===================================================== */
+/* === RESULT CARD ==================================================== */
 .result-card {
-    padding: 1.1rem 1.35rem;
-    border-radius: 1rem;
+    padding: 1.1rem 1.4rem;
+    border-radius: 1.1rem;
     background-color: #ffffff;
-    border: 2px solid #00422522;   /* subtle green border */
-    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-    margin-top: 0.75rem;
-    margin-bottom: 1.2rem;
+    border: 2px solid #00422522;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    margin-top: 0.9rem;
+    margin-bottom: 1.4rem;
 }
 
 .result-label {
@@ -127,23 +135,22 @@ st.markdown("""
 }
 
 .result-main {
-    font-size: 1.15rem;
+    font-size: 1.18rem;
     font-weight: 700;
 }
 
-/* === STATUS PILLS ==================================================== */
+/* === STATUS PILLS =================================================== */
 .pill {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.8rem;
     border-radius: 999px;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
 }
 
 .pill-ok {
     background-color: #004225;
     color: white;
-    border: none;
 }
 
 .pill-bad {
@@ -152,7 +159,7 @@ st.markdown("""
     border: 1px solid #ffb3ad;
 }
 
-/* === TIME GRID ======================================================= */
+/* === TIME GRID ====================================================== */
 .time-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -171,16 +178,18 @@ st.markdown("""
 .time-value {
     font-weight: 600;
 }
+
+/* === FOOTER ========================================================= */
+.footer {
+    margin-top: 2.4rem;
+    font-size: 0.8rem;
+    color: #666666;
+    text-align: center;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- TOP NAVBAR ----------
-st.markdown("""
-<div class="top-navbar">
-    <div class="nav-title">Call Qualification Checker</div>
-    <div class="nav-brand">Shulver Data Works</div>
-</div>
-""", unsafe_allow_html=True)
+
 
 # ---------- Supabase Auth: Sign Up / Login ----------
 if "user" not in st.session_state:
@@ -245,12 +254,17 @@ except Exception as e:
 # ---------- Paywall ----------
 if not is_paid:
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
-    st.markdown('<div class="login-title">💳 Subscription required</div>', unsafe_allow_html=True)
-    st.markdown(
-        "<div class='login-subtitle'>"
-        "Your account is created, but you don't have an active subscription yet."
-        "</div>",
-        unsafe_allow_html=True
+   st.markdown('<div class="login-title">💳 Subscription required</div>', unsafe_allow_html=True)
+
+st.markdown(
+    "<div class='login-subtitle'>"
+    "You’re almost there — activate your subscription to unlock the full Call Qualification Checker."
+    "</div>",
+    unsafe_allow_html=True
+)
+
+st.write("After subscribing, Shulver Data Works will enable your access.")
+
     )
 
     stripe_checkout_url = "https://buy.stripe.com/bJe9AScIYeGTabn121fQI02"  # TODO: replace
@@ -346,6 +360,11 @@ if check_button:
 with st.expander("View NOT-qualified country codes"):
     st.write(sorted(BLOCKED_COUNTRIES))
     st.caption("These countries (plus all of Africa) do NOT qualify.")
+
+st.markdown(
+    "<div class='footer'>© Shulver Data Works — Call Qualification Checker</div>",
+    unsafe_allow_html=True,
+)
 
 
 
